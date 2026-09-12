@@ -51,7 +51,7 @@
         <LinearLayout android:id="@+id/editor_ai_bar" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="8dp" android:paddingEnd="8dp">
             <TextView android:id="@+id/editor_ai_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Project AI · مساعد المشروع" android:textStyle="bold" />
             <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_toggle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="دردشة AI" style="@style/Widget.Material3.Button.TextButton" />
-            <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_preview" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="معاينة" style="@style/Widget.Material3.Button.TextButton" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_preview" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="معاينة" app:icon="@drawable/ic_android" app:iconGravity="textStart" style="@style/Widget.Material3.Button.TextButton" />
         </LinearLayout>
 
         <androidx.viewpager2.widget.ViewPager2

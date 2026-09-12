@@ -52,3 +52,15 @@ The workflow was verified by a successful Debug build:
 ```text
 BUILD SUCCESSFUL in 33s
 ```
+
+## Execution and preview verification
+
+The request path is now explicit: the selected provider receives the project and open-file context; chat answers remain informational; `اقتراح تعديل` requests a structured `FixResponse`; the review dialog displays affected paths; approval creates a Checkpoint and `ChangeApplier` writes validated relative paths under the project root; `تراجع` restores the latest checkpoint.
+
+The editor's phone-icon `معاينة` button now opens `PreviewFragment` in the app's main fragment container with back-stack navigation. The Preview screen reads the project safely, detects XML/Compose/Java, renders the supported XML subset inside a phone-shaped frame, and provides refresh and back actions. It is a pre-install structural preview, not an emulator or a full Compose runtime.
+
+Build result after the integration:
+
+```text
+BUILD SUCCESSFUL in 26s
+```

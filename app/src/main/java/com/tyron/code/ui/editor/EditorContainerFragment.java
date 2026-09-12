@@ -34,6 +34,7 @@ import com.tyron.code.ApplicationLoader;
 import com.tyron.code.ai.AIEngineManager;
 import com.tyron.code.ai.AIModels;
 import com.tyron.code.ai.ChangeApplier;
+import com.tyron.code.ai.PreviewFragment;
 import com.tyron.code.ui.editor.adapter.PageAdapter;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
@@ -203,7 +204,7 @@ public class EditorContainerFragment extends Fragment
     aiMessages = root.findViewById(R.id.editor_ai_messages);
     View panel = root.findViewById(R.id.editor_ai_panel);
     root.findViewById(R.id.editor_ai_toggle).setOnClickListener(v -> panel.setVisibility(panel.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
-    root.findViewById(R.id.editor_ai_preview).setOnClickListener(v -> getParentFragmentManager().setFragmentResult(PREVIEW_KEY, Bundle.EMPTY));
+    root.findViewById(R.id.editor_ai_preview).setOnClickListener(v -> openProjectPreview());
     root.findViewById(R.id.editor_ai_propose).setOnClickListener(v -> requestEditorProposal(root));
     root.findViewById(R.id.editor_ai_rollback).setOnClickListener(v -> rollbackEditorChange(root));
     root.findViewById(R.id.editor_ai_send).setOnClickListener(v -> {
@@ -225,6 +226,12 @@ public class EditorContainerFragment extends Fragment
         }
       });
     });
+  }
+
+  private void openProjectPreview() {
+    Project project = ProjectManager.getInstance().getCurrentProject();
+    if (project == null) { Toast.makeText(requireContext(), "افتح مشروعاً أولاً", Toast.LENGTH_SHORT).show(); return; }
+    getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, PreviewFragment.newInstance(project.getRootFile()), "project_preview").addToBackStack("editor").commit();
   }
 
   private void requestEditorProposal(@NonNull View root) {
