@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +30,7 @@ import com.tyron.builder.project.api.FileManager;
 import com.tyron.builder.project.api.Module;
 import com.tyron.builder.project.listener.FileListener;
 import com.tyron.code.ApplicationLoader;
+import com.tyron.code.ai.AIEngineManager;
 import com.tyron.code.ui.editor.adapter.PageAdapter;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
@@ -40,8 +44,12 @@ import com.tyron.completion.progress.ProgressManager;
 import com.tyron.fileeditor.api.FileEditor;
 import com.tyron.fileeditor.api.FileEditorManager;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.codeassist.unofficial.R;
 
 public class EditorContainerFragment extends Fragment
@@ -62,6 +70,9 @@ public class EditorContainerFragment extends Fragment
 
   private FileEditorManager mFileEditorManager;
   private SharedPreferences pref;
+  private AIEngineManager aiEngine;
+  private ExecutorService aiExecutor;
+  private TextView aiMessages;
 
   private final OnBackPressedCallback mOnBackPressedCallback =
       new OnBackPressedCallback(false) {
@@ -76,6 +87,8 @@ public class EditorContainerFragment extends Fragment
     super.onCreate(savedInstanceState);
 
     pref = ApplicationLoader.getDefaultPreferences();
+    aiEngine = new AIEngineManager(requireContext());
+    aiExecutor = Executors.newSingleThreadExecutor();
     mMainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
     requireActivity().getOnBackPressedDispatcher().addCallback(this, mOnBackPressedCallback);
   }
@@ -170,6 +183,7 @@ public class EditorContainerFragment extends Fragment
         });
     mBehavior.setHalfExpandedRatio(0.3f);
     mBehavior.setFitToContents(false);
+    setupEditorAi(root);
 
     ProjectManager.getInstance().addOnProjectOpenListener(this);
 
@@ -177,6 +191,54 @@ public class EditorContainerFragment extends Fragment
       restoreViewState(savedInstanceState);
     }
     return root;
+  }
+
+  private void setupEditorAi(@NonNull View root) {
+    aiMessages = root.findViewById(R.id.editor_ai_messages);
+    View panel = root.findViewById(R.id.editor_ai_panel);
+    root.findViewById(R.id.editor_ai_toggle).setOnClickListener(v -> panel.setVisibility(panel.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
+    root.findViewById(R.id.editor_ai_preview).setOnClickListener(v -> getParentFragmentManager().setFragmentResult(PREVIEW_KEY, Bundle.EMPTY));
+    root.findViewById(R.id.editor_ai_send).setOnClickListener(v -> {
+      EditText input = root.findViewById(R.id.editor_ai_input);
+      String message = input.getText() == null ? "" : input.getText().toString().trim();
+      if (message.isEmpty()) return;
+      input.setText("");
+      appendEditorAi("أنت", message);
+      aiExecutor.execute(() -> {
+        try {
+          String answer = aiEngine.chat(message, editorProjectContext(), "");
+          if (isAdded()) requireActivity().runOnUiThread(() -> appendEditorAi("AI", answer));
+        } catch (Exception e) {
+          if (isAdded()) requireActivity().runOnUiThread(() -> {
+            appendEditorAi("النظام", e.getMessage() == null ? "تعذر الاتصال بالمزود" : e.getMessage());
+            Toast.makeText(requireContext(), "تحقق من إعداد مزود AI", Toast.LENGTH_SHORT).show();
+          });
+        }
+      });
+    });
+  }
+
+  private void appendEditorAi(String author, String message) {
+    if (aiMessages != null) aiMessages.append("\n" + author + ": " + message);
+  }
+
+  private String editorProjectContext() {
+    Project project = ProjectManager.getInstance().getCurrentProject();
+    List<FileEditor> files = mMainViewModel.getFiles().getValue();
+    Integer position = mMainViewModel.getCurrentPosition().getValue();
+    StringBuilder context = new StringBuilder();
+    if (project != null) context.append("Project root: ").append(project.getRootFile().getAbsolutePath()).append("\n");
+    if (files != null && position != null && position >= 0 && position < files.size()) {
+      File file = files.get(position).getFile();
+      if (file != null) {
+        context.append("Open file: ").append(file.getAbsolutePath()).append("\n");
+        try {
+          String source = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+          context.append("Source:\n").append(source.length() > 12000 ? source.substring(source.length() - 12000) : source);
+        } catch (Exception ignored) { context.append("Source unavailable"); }
+      }
+    }
+    return context.toString();
   }
 
   private void updateTab(TabLayout.Tab tab, int pos) {
@@ -361,6 +423,7 @@ public class EditorContainerFragment extends Fragment
 
   @Override
   public void onDestroy() {
+    if (aiExecutor != null) aiExecutor.shutdownNow();
     super.onDestroy();
 
     ApplicationLoader.getDefaultPreferences().unregisterOnSharedPreferenceChangeListener(this);

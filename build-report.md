@@ -32,3 +32,13 @@ The build emitted existing dependency/parser warnings but no compilation or pack
 ## Scope and limitations
 
 OpenAI-compatible providers share the standard `/chat/completions` request shape. Gemini and Claude use their native request and response contracts. Azure OpenAI and Ollama presets remain editable because their URLs depend on the user's resource or local network. Provider quotas, billing, endpoint reachability, and terms remain the user's responsibility. The delivered artifact is a Debug APK; a Release build needs a separately managed signing key.
+
+## Project AI editor integration
+
+The editor screen now contains an Arabic `Project AI` bar directly below the open-file tabs. It provides a chat toggle, an in-editor message panel, multiline request input, send action, and a preview action. The chat request includes the current project root, the active file path, and a bounded excerpt of the open file source so the selected provider can answer in context. The integration is lifecycle-safe: network work runs on a single background executor and the executor is stopped when the editor Fragment is destroyed.
+
+The updated Debug APK was rebuilt successfully after this integration:
+
+```text
+BUILD SUCCESSFUL in 45s
+```

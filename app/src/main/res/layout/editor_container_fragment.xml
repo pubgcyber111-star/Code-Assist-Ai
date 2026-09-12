@@ -28,6 +28,28 @@
             app:tabGravity="start"
           />
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/editor_ai_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:visibility="gone"
+            app:cardCornerRadius="16dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="10dp">
+                <TextView android:id="@+id/editor_ai_messages" android:layout_width="match_parent" android:layout_height="80dp" android:text="AI: أنا داخل مشروعك الآن. أخبرني بما تريد تغييره." android:textIsSelectable="true" android:textSize="13sp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                    <EditText android:id="@+id/editor_ai_input" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="اطلب تعديلاً على الملف المفتوح…" android:inputType="textMultiLine" android:maxLines="3" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_send" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="إرسال" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout android:id="@+id/editor_ai_bar" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="8dp" android:paddingEnd="8dp">
+            <TextView android:id="@+id/editor_ai_title" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Project AI · مساعد المشروع" android:textStyle="bold" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_toggle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="دردشة AI" style="@style/Widget.Material3.Button.TextButton" />
+            <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_preview" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="معاينة" style="@style/Widget.Material3.Button.TextButton" />
+        </LinearLayout>
+
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewpager"
             android:layout_width="match_parent"
