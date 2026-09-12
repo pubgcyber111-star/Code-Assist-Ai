@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp" android:background="@color/colorSurface">
+  <com.google.android.material.appbar.MaterialToolbar android:id="@+id/previewToolbar" android:layout_width="match_parent" android:layout_height="wrap_content" android:title="Virtual Preview" />
+  <TextView android:id="@+id/previewStatus" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="جاهز للمعاينة" android:textSize="14sp" />
+  <com.google.android.material.button.MaterialButton android:id="@+id/refreshPreview" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="تحديث المعاينة" />
+  <FrameLayout android:id="@+id/phoneFrame" android:layout_width="300dp" android:layout_height="540dp" android:layout_gravity="center_horizontal" android:layout_marginTop="16dp" android:background="#10131A" android:padding="10dp" />
+</LinearLayout>
