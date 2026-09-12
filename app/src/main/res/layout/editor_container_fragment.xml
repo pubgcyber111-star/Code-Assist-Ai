@@ -41,6 +41,10 @@
                     <EditText android:id="@+id/editor_ai_input" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="اطلب تعديلاً على الملف المفتوح…" android:inputType="textMultiLine" android:maxLines="3" />
                     <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_send" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="إرسال" />
                 </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                    <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_propose" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="اقتراح تعديل" style="@style/Widget.Material3.Button.OutlinedButton" />
+                    <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_rollback" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="تراجع" android:visibility="gone" style="@style/Widget.Material3.Button.TextButton" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

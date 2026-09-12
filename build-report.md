@@ -42,3 +42,13 @@ The updated Debug APK was rebuilt successfully after this integration:
 ```text
 BUILD SUCCESSFUL in 45s
 ```
+
+## In-editor change proposal workflow
+
+Project AI now supports a reviewable change workflow inside the editor. After sending a request, the user can select `اقتراح تعديل`; the selected provider returns a structured file proposal. A review dialog lists the root cause, explanation, actions, and paths. The user must explicitly choose `إنشاء نقطة حفظ وتطبيق`. `ChangeApplier` validates relative paths, creates a checkpoint before writing, and exposes `تراجع` to restore the last checkpoint.
+
+The workflow was verified by a successful Debug build:
+
+```text
+BUILD SUCCESSFUL in 33s
+```

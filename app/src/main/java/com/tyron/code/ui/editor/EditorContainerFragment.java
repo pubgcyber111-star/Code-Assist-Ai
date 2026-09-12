@@ -1,6 +1,7 @@
 package com.tyron.code.ui.editor;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,6 +32,8 @@ import com.tyron.builder.project.api.Module;
 import com.tyron.builder.project.listener.FileListener;
 import com.tyron.code.ApplicationLoader;
 import com.tyron.code.ai.AIEngineManager;
+import com.tyron.code.ai.AIModels;
+import com.tyron.code.ai.ChangeApplier;
 import com.tyron.code.ui.editor.adapter.PageAdapter;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
@@ -73,6 +76,9 @@ public class EditorContainerFragment extends Fragment
   private AIEngineManager aiEngine;
   private ExecutorService aiExecutor;
   private TextView aiMessages;
+  private AIModels.FixResponse pendingAiChange;
+  private ChangeApplier aiApplier;
+  private String lastAiRequest = "";
 
   private final OnBackPressedCallback mOnBackPressedCallback =
       new OnBackPressedCallback(false) {
@@ -198,11 +204,14 @@ public class EditorContainerFragment extends Fragment
     View panel = root.findViewById(R.id.editor_ai_panel);
     root.findViewById(R.id.editor_ai_toggle).setOnClickListener(v -> panel.setVisibility(panel.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
     root.findViewById(R.id.editor_ai_preview).setOnClickListener(v -> getParentFragmentManager().setFragmentResult(PREVIEW_KEY, Bundle.EMPTY));
+    root.findViewById(R.id.editor_ai_propose).setOnClickListener(v -> requestEditorProposal(root));
+    root.findViewById(R.id.editor_ai_rollback).setOnClickListener(v -> rollbackEditorChange(root));
     root.findViewById(R.id.editor_ai_send).setOnClickListener(v -> {
       EditText input = root.findViewById(R.id.editor_ai_input);
       String message = input.getText() == null ? "" : input.getText().toString().trim();
       if (message.isEmpty()) return;
       input.setText("");
+      lastAiRequest = message;
       appendEditorAi("أنت", message);
       aiExecutor.execute(() -> {
         try {
@@ -216,6 +225,33 @@ public class EditorContainerFragment extends Fragment
         }
       });
     });
+  }
+
+  private void requestEditorProposal(@NonNull View root) {
+    if (lastAiRequest.isEmpty()) { Toast.makeText(requireContext(), "أرسل طلباً أولاً ثم اختر اقتراح تعديل", Toast.LENGTH_SHORT).show(); return; }
+    root.findViewById(R.id.editor_ai_propose).setEnabled(false);
+    appendEditorAi("النظام", "جاري إعداد اقتراح ملفات للمراجعة…");
+    aiExecutor.execute(() -> {
+      try { pendingAiChange = aiEngine.proposeChanges(lastAiRequest, editorProjectContext(), ""); if (isAdded()) requireActivity().runOnUiThread(() -> showEditorProposal(root)); }
+      catch (Exception e) { if (isAdded()) requireActivity().runOnUiThread(() -> { root.findViewById(R.id.editor_ai_propose).setEnabled(true); appendEditorAi("النظام", "فشل إعداد الاقتراح: " + e.getMessage()); }); }
+    });
+  }
+
+  private void showEditorProposal(@NonNull View root) {
+    StringBuilder files = new StringBuilder();
+    for (AIModels.GeneratedFile file : pendingAiChange.files) files.append("• ").append(file.action).append(" ").append(file.path).append("\n");
+    new AlertDialog.Builder(requireContext()).setTitle("مراجعة اقتراح Project AI").setMessage(pendingAiChange.rootCause + "\n\n" + pendingAiChange.explanation + "\n\nالملفات المقترحة:\n" + files).setNegativeButton("إلغاء", (d, w) -> root.findViewById(R.id.editor_ai_propose).setEnabled(true)).setPositiveButton("إنشاء نقطة حفظ وتطبيق", (d, w) -> applyEditorProposal(root)).show();
+  }
+
+  private void applyEditorProposal(@NonNull View root) {
+    aiExecutor.execute(() -> {
+      try { Project project = ProjectManager.getInstance().getCurrentProject(); if (project == null) throw new IllegalStateException("لا يوجد مشروع مفتوح"); if (aiApplier == null) aiApplier = new ChangeApplier(new File(requireContext().getFilesDir(), "ai-checkpoints")); int count = aiApplier.apply(project.getRootFile(), pendingAiChange); if (isAdded()) requireActivity().runOnUiThread(() -> { root.findViewById(R.id.editor_ai_propose).setEnabled(true); root.findViewById(R.id.editor_ai_rollback).setVisibility(View.VISIBLE); appendEditorAi("النظام", "تم تطبيق " + count + " ملف بعد إنشاء Checkpoint. يمكنك التراجع الآن."); }); }
+      catch (Exception e) { if (isAdded()) requireActivity().runOnUiThread(() -> { root.findViewById(R.id.editor_ai_propose).setEnabled(true); appendEditorAi("النظام", "فشل التطبيق: " + e.getMessage()); }); }
+    });
+  }
+
+  private void rollbackEditorChange(@NonNull View root) {
+    aiExecutor.execute(() -> { try { boolean restored = aiApplier != null && aiApplier.rollback(); if (isAdded()) requireActivity().runOnUiThread(() -> { root.findViewById(R.id.editor_ai_rollback).setVisibility(View.GONE); appendEditorAi("النظام", restored ? "تمت استعادة الحالة السابقة للمشروع." : "لا توجد نقطة حفظ متاحة."); }); } catch (Exception e) { if (isAdded()) requireActivity().runOnUiThread(() -> appendEditorAi("النظام", "فشل التراجع: " + e.getMessage())); } });
   }
 
   private void appendEditorAi(String author, String message) {
