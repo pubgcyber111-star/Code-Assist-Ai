@@ -231,7 +231,12 @@ public class EditorContainerFragment extends Fragment
   private void openProjectPreview() {
     Project project = ProjectManager.getInstance().getCurrentProject();
     if (project == null) { Toast.makeText(requireContext(), "افتح مشروعاً أولاً", Toast.LENGTH_SHORT).show(); return; }
-    getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, PreviewFragment.newInstance(project.getRootFile()), "project_preview").addToBackStack("editor").commit();
+    Fragment parent = getParentFragment();
+    if (parent == null || parent.getView() == null || parent.getView().findViewById(R.id.root) == null) {
+      Toast.makeText(requireContext(), "تعذر فتح حاوية المعاينة، أعد فتح المشروع", Toast.LENGTH_LONG).show();
+      return;
+    }
+    getParentFragmentManager().beginTransaction().replace(R.id.root, PreviewFragment.newInstance(project.getRootFile()), "project_preview").addToBackStack("editor").commit();
   }
 
   private void requestEditorProposal(@NonNull View root) {

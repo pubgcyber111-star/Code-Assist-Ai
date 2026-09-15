@@ -70,3 +70,9 @@ BUILD SUCCESSFUL in 26s
 The source branding is now `CodeAssist.ai`, with application ID and Android namespace `org.codeassist.unofficial.ai`. All generated `R` and `BuildConfig` imports were updated consistently, and the manifest package/authority now follow the new application ID. The launcher icon was replaced with a new CodeAssist.ai mark featuring white `AI` centered between code brackets on a blue developer-tool background, exported at mdpi through xxxhdpi sizes.
 
 Per request, no APK was assembled or exported for this branding-only update. A source compile check passed with `:app:compileDebugJavaWithJavac` (`BUILD SUCCESSFUL in 39s`).
+
+## Preview crash fix
+
+The editor is hosted inside `MainFragment` as a child fragment. The preview action previously attempted to replace the activity-level `fragment_container`, which is not present in the child fragment view and caused `IllegalArgumentException: No view found for id ... fragment_container`. The action now replaces the existing `root` child container and checks that the host container exists before navigating.
+
+Verification: `:app:assembleDebug` completed successfully in 52 seconds.
