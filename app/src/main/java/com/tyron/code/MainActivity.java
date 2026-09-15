@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import com.tyron.code.ui.main.HomeFragment;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.R;
 
 public class MainActivity extends AppCompatActivity {
   @Override

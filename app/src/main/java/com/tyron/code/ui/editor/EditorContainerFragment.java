@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.R;
 
 public class EditorContainerFragment extends Fragment
     implements FileListener,

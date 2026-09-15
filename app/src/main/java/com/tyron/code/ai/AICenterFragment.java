@@ -20,7 +20,7 @@ import com.google.android.material.button.MaterialButton;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.R;
 
 public final class AICenterFragment extends Fragment {
   private final ExecutorService executor=Executors.newSingleThreadExecutor(); private final StringBuilder conversation=new StringBuilder();

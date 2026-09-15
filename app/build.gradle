@@ -5,7 +5,7 @@ apply plugin: 'com.diffplug.spotless'
 android {
     compileSdkVersion 34
     buildToolsVersion '34.0.0' 
-	namespace "org.codeassist.unofficial" 
+	namespace "org.codeassist.unofficial.ai"
 	
 	spotless {
 		java {
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         targetSdkVersion 33
 		minSdkVersion 26		
-		applicationId "org.codeassist.unofficial"
+		applicationId "org.codeassist.unofficial.ai"
 		versionCode 1
 		versionName "1.0.2"         	
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

@@ -80,7 +80,7 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.R;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class CodeEditorFragment extends Fragment

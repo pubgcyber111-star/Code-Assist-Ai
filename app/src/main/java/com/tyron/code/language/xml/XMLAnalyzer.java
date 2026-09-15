@@ -39,7 +39,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 import kotlin.Unit;
 import org.apache.commons.io.FileUtils;
-import org.codeassist.unofficial.BuildConfig;
+import org.codeassist.unofficial.ai.BuildConfig;
 
 public class XMLAnalyzer extends DiagnosticTextmateAnalyzer {
 

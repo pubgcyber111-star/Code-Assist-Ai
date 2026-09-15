@@ -6,7 +6,7 @@ import com.tyron.actions.AnAction;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.code.ui.main.MainFragment;
 import com.tyron.code.ui.main.MainViewModel;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.R;
 
 public class CloseAllEditorAction extends AnAction {
 

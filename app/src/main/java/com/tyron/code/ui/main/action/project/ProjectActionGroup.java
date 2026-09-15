@@ -9,7 +9,7 @@ import com.tyron.actions.ActionPlaces;
 import com.tyron.actions.AnAction;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.R;
 
 public class ProjectActionGroup extends ActionGroup {
 

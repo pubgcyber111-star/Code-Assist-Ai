@@ -62,7 +62,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import javax.lang.model.SourceVersion;
 import org.apache.commons.io.FileUtils;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.R;
 
 @SuppressWarnings("ConstantConditions")
 public class WizardFragment extends Fragment {

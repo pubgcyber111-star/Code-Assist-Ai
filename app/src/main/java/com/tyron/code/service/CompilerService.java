@@ -32,8 +32,8 @@ import com.tyron.completion.progress.ProgressIndicator;
 import com.tyron.completion.progress.ProgressManager;
 import java.io.File;
 import java.lang.ref.WeakReference;
-import org.codeassist.unofficial.BuildConfig;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.BuildConfig;
+import org.codeassist.unofficial.ai.R;
 
 public class CompilerService extends Service {
 

@@ -15,7 +15,7 @@ import com.google.android.material.button.MaterialButton;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.R;
 
 public final class PreviewFragment extends Fragment {
   private File project; private FrameLayout phone; private TextView status;

@@ -54,7 +54,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Handler;
 import javax.tools.Diagnostic;
-import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.ai.R;
 
 public class AppLogFragment extends Fragment implements ProjectManager.OnProjectOpenListener {
 
