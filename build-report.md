@@ -76,3 +76,11 @@ Per request, no APK was assembled or exported for this branding-only update. A s
 The editor is hosted inside `MainFragment` as a child fragment. The preview action previously attempted to replace the activity-level `fragment_container`, which is not present in the child fragment view and caused `IllegalArgumentException: No view found for id ... fragment_container`. The action now replaces the existing `root` child container and checks that the host container exists before navigating.
 
 Verification: `:app:assembleDebug` completed successfully in 52 seconds.
+
+## Project Agent and complete model catalog
+
+Added the model identifiers supplied in the user reference across OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Groq, Together AI, DeepSeek, Mistral AI, Cohere, xAI Grok, Perplexity, Cerebras, Azure OpenAI, and Ollama. The model selector keeps the exact identifier and the connection test remains the authority for account/model availability; no provider is silently substituted.
+
+Added `ProjectAuditService`: it inventories project paths, file sizes, file types, build/configuration files, package/application identifiers, text excerpts, and binary metadata under bounded limits. It intentionally excludes VCS/build caches and never reads local.properties or keystore content. The editor now has **فحص المشروع بالكامل**. It sends the structured inventory to the selected AI provider and returns a root-cause diagnosis, project map, ordered repair plan, and complete proposed file changes. The user must review and approve before Checkpoint-backed application; rollback remains available.
+
+The full project was restored from the `ai-advanced` branch before these changes. APK verification was not completed in the current environment because Android SDK is unavailable (`SDK location not found`); no APK is claimed or exported from this run.

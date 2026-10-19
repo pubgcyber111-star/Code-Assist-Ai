@@ -45,6 +45,7 @@
                     <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_propose" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="اقتراح تعديل" style="@style/Widget.Material3.Button.OutlinedButton" />
                     <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_rollback" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="تراجع" android:visibility="gone" style="@style/Widget.Material3.Button.TextButton" />
                 </LinearLayout>
+                <com.google.android.material.button.MaterialButton android:id="@+id/editor_ai_audit" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="فحص المشروع بالكامل" style="@style/Widget.Material3.Button.TextButton" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

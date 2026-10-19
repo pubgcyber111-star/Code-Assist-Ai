@@ -35,6 +35,7 @@ import com.tyron.code.ai.AIEngineManager;
 import com.tyron.code.ai.AIModels;
 import com.tyron.code.ai.ChangeApplier;
 import com.tyron.code.ai.PreviewFragment;
+import com.tyron.code.ai.ProjectAuditService;
 import com.tyron.code.ui.editor.adapter.PageAdapter;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
@@ -206,6 +207,7 @@ public class EditorContainerFragment extends Fragment
     root.findViewById(R.id.editor_ai_toggle).setOnClickListener(v -> panel.setVisibility(panel.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
     root.findViewById(R.id.editor_ai_preview).setOnClickListener(v -> openProjectPreview());
     root.findViewById(R.id.editor_ai_propose).setOnClickListener(v -> requestEditorProposal(root));
+    root.findViewById(R.id.editor_ai_audit).setOnClickListener(v -> auditWholeProject(root));
     root.findViewById(R.id.editor_ai_rollback).setOnClickListener(v -> rollbackEditorChange(root));
     root.findViewById(R.id.editor_ai_send).setOnClickListener(v -> {
       EditText input = root.findViewById(R.id.editor_ai_input);
@@ -249,6 +251,22 @@ public class EditorContainerFragment extends Fragment
     });
   }
 
+  private void auditWholeProject(@NonNull View root) {
+    Project project = ProjectManager.getInstance().getCurrentProject();
+    if (project == null) { Toast.makeText(requireContext(), "افتح أو استورد مشروعاً أولاً", Toast.LENGTH_LONG).show(); return; }
+    View button = root.findViewById(R.id.editor_ai_audit);
+    button.setEnabled(false);
+    appendEditorAi("النظام", "جاري جرد الملفات والمسارات والحزمة وتحليل المشروع بالكامل…");
+    aiExecutor.execute(() -> {
+      try {
+        pendingAiChange = aiEngine.reviewProject(project.getRootFile());
+        if (isAdded()) requireActivity().runOnUiThread(() -> { button.setEnabled(true); showEditorProposal(root); });
+      } catch (Exception e) {
+        if (isAdded()) requireActivity().runOnUiThread(() -> { button.setEnabled(true); appendEditorAi("النظام", "فشل فحص المشروع: " + (e.getMessage() == null ? "خطأ غير معروف" : e.getMessage())); });
+      }
+    });
+  }
+
   private void showEditorProposal(@NonNull View root) {
     StringBuilder files = new StringBuilder();
     for (AIModels.GeneratedFile file : pendingAiChange.files) files.append("• ").append(file.action).append(" ").append(file.path).append("\n");
@@ -275,7 +293,11 @@ public class EditorContainerFragment extends Fragment
     List<FileEditor> files = mMainViewModel.getFiles().getValue();
     Integer position = mMainViewModel.getCurrentPosition().getValue();
     StringBuilder context = new StringBuilder();
-    if (project != null) context.append("Project root: ").append(project.getRootFile().getAbsolutePath()).append("\n");
+    if (project != null) {
+      context.append("Project root: ").append(project.getRootFile().getAbsolutePath()).append("\n");
+      try { context.append(new ProjectAuditService().buildContext(project.getRootFile())); }
+      catch (Exception ignored) { context.append("Project inventory unavailable\n"); }
+    }
     if (files != null && position != null && position >= 0 && position < files.size()) {
       File file = files.get(position).getFile();
       if (file != null) {
